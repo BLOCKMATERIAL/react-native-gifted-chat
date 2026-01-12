@@ -124,3 +124,44 @@ export function useCallbackThrottled<T extends (...args: any[]) => any>(callback
 
   return savedFunc
 }
+
+/**
+ * Safely convert createdAt to a valid Date or number
+ * Handles Date, number (timestamp), and Dayjs objects
+ * Prevents "Objects are not valid as a React child" error
+ */
+export function normalizeCreatedAt(createdAt: any): Date | number | null {
+  if (createdAt == null)
+    return null
+
+  // If it's already a Date, return it
+  if (createdAt instanceof Date)
+    return createdAt
+
+  // If it's a number (timestamp), return it
+  if (typeof createdAt === 'number')
+    return createdAt
+
+  // If it's a Dayjs object with $isDayjsObject property, convert to Date
+  if (typeof createdAt === 'object' && createdAt.$isDayjsObject === true) {
+    const asDate = createdAt.toDate()
+    return asDate instanceof Date ? asDate : null
+  }
+
+  // If it's a string, try to parse as number (timestamp)
+  if (typeof createdAt === 'string') {
+    const parsed = Number.parseInt(createdAt, 10)
+    return !Number.isNaN(parsed) ? parsed : null
+  }
+
+  // Try to convert using dayjs as fallback
+  try {
+    const dayjsObj = dayjs(createdAt)
+    if (dayjsObj.isValid())
+      return dayjsObj.toDate()
+  } catch {
+    // Ignore errors
+  }
+
+  return null
+}

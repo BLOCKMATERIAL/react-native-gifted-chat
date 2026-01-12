@@ -11,6 +11,7 @@ import { DATE_FORMAT } from '../Constant'
 
 import { useChatContext } from '../GiftedChatContext'
 import stylesCommon from '../styles'
+import { normalizeCreatedAt } from '../utils'
 import styles from './styles'
 import { DayProps } from './types'
 
@@ -33,8 +34,13 @@ export function Day ({
     if (createdAt == null)
       return null
 
+    // Normalize createdAt to handle Dayjs objects, Dates, and timestamps
+    const normalizedDate = normalizeCreatedAt(createdAt)
+    if (normalizedDate == null)
+      return null
+
     const now = dayjs().startOf('day')
-    const date = dayjs(createdAt).locale(getLocale()).startOf('day')
+    const date = dayjs(normalizedDate).locale(getLocale()).startOf('day')
 
     if (!now.isSame(date, 'year'))
       return date.format('D MMMM YYYY')

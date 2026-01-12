@@ -3,7 +3,7 @@ import { LayoutChangeEvent } from 'react-native'
 import Animated, { interpolate, useAnimatedStyle, useDerivedValue, useSharedValue, useAnimatedReaction, withTiming, runOnJS } from 'react-native-reanimated'
 import { Day } from '../../../Day'
 import stylesCommon from '../../../styles'
-import { isSameDay } from '../../../utils'
+import { isSameDay, normalizeCreatedAt } from '../../../utils'
 import { useAbsoluteScrolledPositionToBottomOfDay, useRelativeScrolledPositionToBottomOfDay } from '../Item'
 
 import styles from './styles'
@@ -122,12 +122,17 @@ export const DayAnimated = ({ scrolledY, daysPositions, listHeight, renderDay, m
     if (!createdAt)
       return null
 
+    // Normalize createdAt to handle Dayjs objects, Dates, and timestamps
+    const normalizedDate = normalizeCreatedAt(createdAt)
+    if (normalizedDate == null)
+      return null
+
     return renderDay
-      ? renderDay({ ...rest, createdAt })
+      ? renderDay({ ...rest, createdAt: normalizedDate })
       : <Day
         {...rest}
         containerStyle={[styles.dayAnimatedDayContainerStyle, rest.containerStyle]}
-        createdAt={createdAt}
+        createdAt={normalizedDate}
       />
   }, [createdAt, renderDay, rest])
 

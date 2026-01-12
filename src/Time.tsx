@@ -8,6 +8,7 @@ import { TIME_FORMAT } from './Constant'
 import { useChatContext } from './GiftedChatContext'
 import { LeftRightStyle, IMessage } from './Models'
 import { getStyleWithPosition } from './styles'
+import { normalizeCreatedAt } from './utils'
 
 const styles = StyleSheet.create({
   text: {
@@ -43,7 +44,12 @@ export const Time = <TMessage extends IMessage = IMessage>({
     if (!currentMessage)
       return null
 
-    return dayjs(currentMessage.createdAt).locale(getLocale()).format(timeFormat)
+    // Normalize createdAt to handle Dayjs objects, Dates, and timestamps
+    const normalizedDate = normalizeCreatedAt(currentMessage.createdAt)
+    if (normalizedDate == null)
+      return null
+
+    return dayjs(normalizedDate).locale(getLocale()).format(timeFormat)
   }, [currentMessage, getLocale, timeFormat])
 
   if (!currentMessage)

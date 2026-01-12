@@ -119,14 +119,23 @@ export const DayAnimated = ({ scrolledY, daysPositions, listHeight, renderDay, m
   }, [isLoadingAnim, isLoading])
 
   const dayContent = useMemo(() => {
-    if (!createdAt)
+    if (!createdAt) {
+      console.debug('[DayAnimated] createdAt is falsy')
       return null
+    }
+
+    console.debug('[DayAnimated] Processing createdAt:', createdAt, 'Type:', typeof createdAt)
 
     // Normalize createdAt to handle Dayjs objects, Dates, and timestamps
     const normalizedDate = normalizeCreatedAt(createdAt)
-    if (normalizedDate == null)
+    console.debug('[DayAnimated] After normalization:', normalizedDate)
+    
+    if (normalizedDate == null) {
+      console.warn('[DayAnimated] normalizeCreatedAt returned null!')
       return null
+    }
 
+    console.debug('[DayAnimated] Passing normalized date to Day:', normalizedDate)
     return renderDay
       ? renderDay({ ...rest, createdAt: normalizedDate })
       : <Day

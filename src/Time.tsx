@@ -41,13 +41,21 @@ export const Time = <TMessage extends IMessage = IMessage>({
   const { getLocale } = useChatContext()
 
   const formattedTime = useMemo(() => {
-    if (!currentMessage)
+    if (!currentMessage) {
+      console.debug('[Time] currentMessage is null/undefined')
       return null
+    }
+
+    console.debug('[Time] Processing createdAt:', currentMessage.createdAt, 'Type:', typeof currentMessage.createdAt)
 
     // Normalize createdAt to handle Dayjs objects, Dates, and timestamps
     const normalizedDate = normalizeCreatedAt(currentMessage.createdAt)
-    if (normalizedDate == null)
+    console.debug('[Time] After normalization:', normalizedDate)
+    
+    if (normalizedDate == null) {
+      console.warn('[Time] normalizeCreatedAt returned null!')
       return null
+    }
 
     return dayjs(normalizedDate).locale(getLocale()).format(timeFormat)
   }, [currentMessage, getLocale, timeFormat])

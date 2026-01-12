@@ -31,13 +31,21 @@ export function Day ({
   const { getLocale } = useChatContext()
 
   const dateStr = useMemo(() => {
-    if (createdAt == null)
+    if (createdAt == null) {
+      console.debug('[Day] createdAt is null/undefined')
       return null
+    }
+
+    console.debug('[Day] Processing createdAt:', createdAt, 'Type:', typeof createdAt)
 
     // Normalize createdAt to handle Dayjs objects, Dates, and timestamps
     const normalizedDate = normalizeCreatedAt(createdAt)
-    if (normalizedDate == null)
+    console.debug('[Day] After normalization:', normalizedDate)
+    
+    if (normalizedDate == null) {
+      console.warn('[Day] normalizeCreatedAt returned null!')
       return null
+    }
 
     const now = dayjs().startOf('day')
     const date = dayjs(normalizedDate).locale(getLocale()).startOf('day')
